@@ -39,7 +39,7 @@ export const cities = [
   "Cherrapunji",
   "Chidambaram",
   "Chikhaldara Hills",
-  "Chopta",
+
   "Coimbatore",
   "Coonoor",
   "Coorg",
