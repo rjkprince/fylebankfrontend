@@ -1,0 +1,34 @@
+.Heading {
+  font-size: 30px !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #ccc;
+  width: fit-content !important;
+  margin: 20px auto !important;
+}
+.PopButton {
+  background-color: #ccc !important;
+}
+
+.root {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  width: 400px;
+}
+
+.input {
+  flex: 1;
+}
+
+.Actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.rootTable {
+  width: 80% !important;
+  margin: 20px auto !important;
+}
+.container {
+  max-height: 440px !important;
+}
