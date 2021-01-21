@@ -1,7 +1,7 @@
 export const cities = [
   "Agartala",
   "Agra",
-  "Agumbe",
+
   "Ahmedabad",
   "Aizawl",
   "Ajmer",
