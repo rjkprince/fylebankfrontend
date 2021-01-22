@@ -59,16 +59,13 @@ export default function Homepage() {
     // });
   }, []);
 
-  const searchByCity = async (city, newPage) => {
-    const offset = newPage
-      ? state.rowsPerPage * newPage + 1
-      : state.rowsPerPage * state.page + 1;
+  const searchByCity = async (city, limit, offset) => {
     const baseUrl =
       process.env.NODE_ENV === "development"
         ? "http://localhost:5000"
         : process.env.REACT_APP_URL;
     const result = await axios.get(
-      `${baseUrl}/api/branches?q=${city}&limit=${state.rowsPerPage}&offset=${offset}`
+      `${baseUrl}/api/branches?q=${city}&limit=${limit}&offset=${offset}`
     );
     return result;
   };
@@ -83,13 +80,14 @@ export default function Homepage() {
     return result;
   };
 
-  const searchByQuery = async (query) => {
+  const searchByQuery = async (query, limit, offset) => {
     const baseUrl =
       process.env.NODE_ENV === "development"
         ? "http://localhost:5000"
         : process.env.REACT_APP_URL;
+
     const result = await axios.get(
-      `${baseUrl}/api/branches/autocomplete?q=${query}&limit=${state.rowsPerPage}&offset=${state.page}`
+      `${baseUrl}/api/branches/autocomplete?q=${query}&limit=${limit}&offset=${offset}`
     );
 
     return result;
@@ -105,7 +103,11 @@ export default function Homepage() {
 
   const handleClose = async (event) => {
     if (event.target.innerText !== "") {
-      const result = await searchByCity(event.target.innerText);
+      const result = await searchByCity(
+        event.target.innerText,
+        state.rowsPerPage,
+        state.rowsPerPage * 0 + 1
+      );
 
       setSearchQuery("");
       setState({
@@ -134,7 +136,9 @@ export default function Homepage() {
       result = await searchAll(state.rowsPerPage, offset);
       console.log(result);
     } else if (state.button !== "select city" && searchQuery === "") {
-      result = await searchByCity(state.button, newPage);
+      result = await searchByCity(state.button, state.rowsPerPage, offset);
+    } else if (state.button === "select city" && searchQuery !== "") {
+      result = await searchByQuery(searchQuery, state.rowsPerPage, offset);
     }
     setState({
       ...state,
@@ -144,11 +148,14 @@ export default function Homepage() {
   };
 
   const handleChangeRowsPerPage = async (event) => {
-    const offset = event.target.value * state.page + 1;
+    const offset = event.target.value * 0 + 1;
     let result;
     if (state.button === "select city" && searchQuery === "") {
       result = await searchAll(event.target.value, offset);
-      console.log(result);
+    } else if (state.button !== "select city" && searchQuery === "") {
+      result = await searchByCity(state.button, event.target.value, offset);
+    } else if (state.button === "select city" && searchQuery !== "") {
+      result = await searchByQuery(searchQuery, event.target.value, offset);
     }
     setState({
       ...state,
@@ -163,7 +170,11 @@ export default function Homepage() {
   };
   const searchHandler = async (event) => {
     setSearchQuery(event.target.value);
-    const result = await searchByQuery(event.target.value);
+    const result = await searchByQuery(
+      event.target.value,
+      state.rowsPerPage,
+      state.rowsPerPage * 0 + 1
+    );
 
     setState({
       ...state,
