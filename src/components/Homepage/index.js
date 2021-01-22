@@ -28,6 +28,7 @@ export default function Homepage() {
     banks: [],
     page: 0,
     rowsPerPage: 10,
+    favCities: JSON.parse(localStorage.getItem("cityArr")) || [],
   });
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -51,12 +52,7 @@ export default function Homepage() {
         });
       });
 
-    // axios.get(`${baseUrl}/api/cities`, config).then((res) => {
-    //   setState({
-    //     ...state,
-    //     cities: res.data.cities,
-    //   });
-    // });
+    let cityArr = JSON.parse(localStorage.getItem("cityArr"));
   }, []);
 
   const searchByCity = async (city, limit, offset) => {
@@ -165,8 +161,44 @@ export default function Homepage() {
     });
   };
 
-  const favHandle = (event, id) => {
-    console.log(id);
+  const favHandle = (event, ifsc) => {
+    if (event.target.checked) {
+      saveCityToLocal(ifsc);
+      let cityArr = state.favCities;
+      console.log(cityArr);
+      cityArr.push(ifsc);
+      setState({
+        ...state,
+        favCities: cityArr,
+      });
+    } else {
+      deleteCityFromLocal(ifsc);
+      let cityArr = state.favCities;
+      cityArr.splice(cityArr.indexOf(ifsc), 1);
+      setState({
+        ...state,
+        favCities: cityArr,
+      });
+    }
+  };
+  const saveCityToLocal = (ifsc) => {
+    let cityArr = JSON.parse(localStorage.getItem("cityArr"));
+    if (cityArr) {
+      cityArr.push(ifsc);
+    } else {
+      cityArr = [];
+      cityArr.push(ifsc);
+    }
+    localStorage.setItem("cityArr", JSON.stringify(cityArr));
+  };
+  const deleteCityFromLocal = (ifsc) => {
+    let cityArr = JSON.parse(localStorage.getItem("cityArr"));
+    if (cityArr) {
+      cityArr.splice(cityArr.indexOf(ifsc), 1);
+    } else {
+      cityArr = [];
+    }
+    localStorage.setItem("cityArr", JSON.stringify(cityArr));
   };
   const searchHandler = async (event) => {
     setSearchQuery(event.target.value);
@@ -340,13 +372,20 @@ export default function Homepage() {
             <TableBody>
               {rows.map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.ifsc}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       if (column.checkbox) {
                         return (
                           <TableCell padding="checkbox" key={column.id}>
-                            <Checkbox onClick={(e) => favHandle(e, row.code)} />
+                            <Checkbox
+                              checked={
+                                state.favCities.indexOf(row.ifsc) === -1
+                                  ? false
+                                  : true
+                              }
+                              onClick={(e) => favHandle(e, row.ifsc)}
+                            />
                           </TableCell>
                         );
                       }
